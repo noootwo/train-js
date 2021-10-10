@@ -5,10 +5,10 @@ class Commitment {
     REJECTED: "失败",
   };
   constructor(func) {
-    this.state = Commitment._status.PENDING;
+    this.status = Commitment._status.PENDING;
     this.result = null;
-    this.fulfilledStack = [];
-    this.rejectedStack = [];
+    this.resolveCallbackStack = [];
+    this.rejectCallbackStack = [];
     func(this.resolve.bind(this), this.reject.bind(this));
   }
 
@@ -17,7 +17,7 @@ class Commitment {
       if (this.status === Commitment._status.PENDING) {
         this.status = Commitment._status.FULFILLED;
         this.result = result;
-        this.fulfilledStack.forEach((callback) => {
+        this.resolveCallbackStack.forEach((callback) => {
           callback(result);
         });
       }
@@ -29,7 +29,7 @@ class Commitment {
       if (this.status === Commitment._status.PENDING) {
         this.status = Commitment._status.REJECTED;
         this.result = result;
-        this.rejectedStack.forEach((callback) => {
+        this.rejectCallbackStack.forEach((callback) => {
           callback(result);
         });
       }
@@ -37,12 +37,12 @@ class Commitment {
   }
 
   then(onFULFILLED, onREJECTED) {
-    return new Commitment((reolve, reject) => {
+    return new Commitment((resolve, reject) => {
       onFULFILLED = typeof onFULFILLED === "function" ? onFULFILLED : () => {};
       onREJECTED = typeof onREJECTED === "function" ? onREJECTED : () => {};
       if (this.status === Commitment._status.PENDING) {
-        this.fulfilledStack.push(onFULFILLED);
-        this.rejectedStack.push(onREJECTED);
+        this.resolveCallbackStack.push(onFULFILLED);
+        this.rejectCallbackStack.push(onREJECTED);
       }
       if (this.status === Commitment._status.FULFILLED) {
         setTimeout(() => {
@@ -57,3 +57,30 @@ class Commitment {
     });
   }
 }
+
+console.log(1);
+let commitment = new Commitment((resolve, reject) => {
+  console.log(2);
+  console.log(commitment.status);
+  setTimeout(() => {
+    console.log(3);
+    console.log(commitment.status);
+    resolve("success");
+    console.log(commitment.status);
+    console.log(4);
+  });
+});
+
+commitment.then((result) => {
+  console.log(result);
+});
+
+// console
+// 1
+// 2
+// undefined
+// 3
+// 待定
+// 待定
+// 4
+// success
