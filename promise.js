@@ -71,9 +71,13 @@ let commitment = new Commitment((resolve, reject) => {
   });
 });
 
-commitment.then((result) => {
-  console.log(result);
-});
+commitment
+  .then((result) => {
+    console.log(result);
+  })
+  .then((result) => {
+    console.log(result);
+  });
 
 // console
 // 1
