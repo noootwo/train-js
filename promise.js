@@ -9,7 +9,11 @@ class Commitment {
     this.result = null;
     this.resolveCallbackStack = [];
     this.rejectCallbackStack = [];
-    func(this.resolve.bind(this), this.reject.bind(this));
+    try {
+      func(this.resolve.bind(this), this.reject.bind(this));
+    } catch (err) {
+      this.reject(err);
+    }
   }
 
   resolve(result) {
