@@ -1,3 +1,6 @@
+// 和冒泡排序一致，相比其它排序算法，这也是一个相对较高的时间复杂度，一般情况不推荐使用
+
+// 但是我们还是要掌握冒泡排序的思想及实现，这对于我们的算法思维是有很大帮助的
 function selectSort(arr) {
   const len = arr.length
   if (len <= 1) return arr
