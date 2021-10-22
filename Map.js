@@ -7,8 +7,8 @@ myMap.prototype.init = function () {
   this.bucket = new Array(this.bucketLength)
   for (var i = 0; i < this.bucket.length; i++) {
     this.bucket[i] = {
-        type: 'bucket_' + i,
-        next: null
+      type: 'bucket_' + i,
+      next: null
     }
   }
 }
@@ -46,17 +46,17 @@ myMap.prototype.set = function (key, value) {
   let hash = this.makeHash(key);
   let oTempBucket = this.bucket[hash];
   while (oTempBucket.next) {
-      if (oTempBucket.next.key == key) {
-          oTempBucket.next.value = value;
-          return;
-      } else {
-          oTempBucket = oTempBucket.next;
-      }
+    if (oTempBucket.next.key == key) {
+      oTempBucket.next.value = value;
+        return;
+    } else {
+      oTempBucket = oTempBucket.next;
+    }
   };
   oTempBucket.next = {
-      key: key,
-      value: value,
-      next: null
+    key: key,
+    value: value,
+    next: null
   };
 }
 
@@ -64,11 +64,11 @@ myMap.prototype.get = function (key) {
   let hash = this.makeHash(key);
   let oTempBucket = this.bucket[hash];
   while (oTempBucket) {
-      if (oTempBucket.key == key) {
-          return oTempBucket.value;
-      } else {
-          oTempBucket = oTempBucket.next;
-      }
+    if (oTempBucket.key == key) {
+      return oTempBucket.value;
+    } else {
+      oTempBucket = oTempBucket.next;
+    }
   }
 
   return undefined;
@@ -78,12 +78,12 @@ myMap.prototype.delete = function (key) {
   let hash = this.makeHash(key);
   let oTempBucket = this.bucket[hash];
   while (oTempBucket.next) {
-      if (oTempBucket.next.key == key) {
-          oTempBucket.next = oTempBucket.next.next;
-          return true;
-      } else {
-          oTempBucket = oTempBucket.next;
-      }
+    if (oTempBucket.next.key == key) {
+      oTempBucket.next = oTempBucket.next.next;
+        return true;
+    } else {
+      oTempBucket = oTempBucket.next;
+    }
   }
 
   return false;
@@ -93,16 +93,47 @@ myMap.prototype.has = function (key) {
   let hash = this.makeHash(key);
   let oTempBucket = this.bucket[hash];
   while (oTempBucket) {
-      if (oTempBucket.next && oTempBucket.next.key == key) {
-          return true;
-      } else {
-          oTempBucket = oTempBucket.next;
-      }
+    if (oTempBucket.next && oTempBucket.next.key == key) {
+      return true;
+    } else {
+      oTempBucket = oTempBucket.next;
+    }
   }
-  
+
   return false;
 };
 
 myMap.prototype.clear = function (key) {
   this.init();
 }
+
+const map = new myMap()
+
+map.set('a', 1)
+map.set('b', 2)
+map.set('c', 3)
+map.set('d', 4)
+map.set('e', 5)
+map.set('f', 6)
+map.set('h', 7)
+map.set('i', 8)
+map.set('j', 9)
+
+console.log(map.get('a'))
+console.log(map.get('b'))
+console.log(map.get('c'))
+console.log(map.get('d'))
+console.log(map.get('e'))
+console.log(map.get('f'))
+console.log(map.get('h'))
+console.log(map.get('j'))
+
+console.log(map.bucket[0])
+console.log(map.bucket[1])
+console.log(map.bucket[2])
+console.log(map.bucket[3])
+console.log(map.bucket[4])
+console.log(map.bucket[5])
+console.log(map.bucket[6])
+console.log(map.bucket[7])
+
