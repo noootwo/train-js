@@ -80,7 +80,7 @@ myMap.prototype.delete = function (key) {
   while (oTempBucket.next) {
     if (oTempBucket.next.key == key) {
       oTempBucket.next = oTempBucket.next.next;
-        return true;
+      return true;
     } else {
       oTempBucket = oTempBucket.next;
     }
