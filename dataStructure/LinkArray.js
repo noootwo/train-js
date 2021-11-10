@@ -1,7 +1,7 @@
 /*
  * @Description: 
  * @Date: 2021-11-08 11:44:10
- * @LastEditTime: 2021-11-08 16:02:38
+ * @LastEditTime: 2021-11-08 18:08:15
  * @FilePath: \train-js\dataStructure\LinkArray.js
  */
 function LinkNode(val) {
@@ -26,6 +26,7 @@ LinkedList.prototype.insert = function (val, item){
   let currNode = this.find(item)
   newNode.next = currNode.next
   currNode.next = newNode
+  return newNode
 }
 
 LinkedList.prototype.findPrev = function (item){
