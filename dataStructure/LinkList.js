@@ -1,9 +1,3 @@
-/*
- * @Description: 
- * @Date: 2021-11-08 11:44:10
- * @LastEditTime: 2021-11-08 18:08:15
- * @FilePath: \train-js\dataStructure\LinkArray.js
- */
 function LinkNode(val) {
   this.val = val;
   this.next = null;
