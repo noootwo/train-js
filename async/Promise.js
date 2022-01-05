@@ -1,94 +1,60 @@
-class Commitment {
-  static _status = {
-    PENDING: "待定",
-    FULFILLED: "成功",
-    REJECTED: "失败",
-  };
+class myPromise{
+  static status = {
+    PENDING: 'pending',
+    FULFILLED: 'fulfilled',
+    REJECTED: 'rejected'
+  }
+
   constructor(func) {
-    this.status = Commitment._status.PENDING;
-    this.result = null;
-    this.resolveCallbackStack = [];
-    this.rejectCallbackStack = [];
+    this.PromiseState = myPromise.status.PENDING
+    this.PromiseResult = null
+    this.onFulfilledCallbacks = []
+    this.onRejectedCallbacks = []
     try {
-      func(this.resolve.bind(this), this.reject.bind(this));
-    } catch (err) {
-      this.reject(err);
+      func(this.resolve.bind(this), this.reject.bind(this))
+    } catch (error) {
+      this.reject(error)
     }
   }
 
   resolve(result) {
-    setTimeout(() => {
-      if (this.status === Commitment._status.PENDING) {
-        this.status = Commitment._status.FULFILLED;
-        this.result = result;
-        this.resolveCallbackStack.forEach((callback) => {
-          callback(result);
-        });
-      }
-    });
+    if (this.PromiseState === myPromise.status.PENDING) {
+      setTimeout(() => {
+        this.PromiseState = myPromise.status.FULFILLED
+        this.PromiseResult = result
+        this.onFulfilledCallbacks.forEach(callback => {
+          callback(result)
+        })
+      })
+    }
   }
 
-  reject(result) {
-    setTimeout(() => {
-      if (this.status === Commitment._status.PENDING) {
-        this.status = Commitment._status.REJECTED;
-        this.result = result;
-        this.rejectCallbackStack.forEach((callback) => {
-          callback(result);
-        });
-      }
-    });
+  reject(reason) {
+    if (this.PromiseState === myPromise.status.PENDING) {
+      setTimeout(() => {
+        this.PromiseState = myPromise.status.REJECTED
+        this.PromiseResult = reason
+        this.onRejectedCallbacks.forEach(callback => {
+          callback(reason)
+        })
+      })
+    }
   }
 
-  then(onFULFILLED, onREJECTED) {
-    return new Commitment((resolve, reject) => {
-      onFULFILLED = typeof onFULFILLED === "function" ? onFULFILLED : () => {};
-      onREJECTED = typeof onREJECTED === "function" ? onREJECTED : () => {};
-      if (this.status === Commitment._status.PENDING) {
-        this.resolveCallbackStack.push(onFULFILLED);
-        this.rejectCallbackStack.push(onREJECTED);
-      }
-      if (this.status === Commitment._status.FULFILLED) {
-        setTimeout(() => {
-          onFULFILLED(this.result);
-        });
-      }
-      if (this.status === Commitment._status.REJECTED) {
-        setTimeout(() => {
-          onREJECTED(this.result);
-        });
-      }
-    });
+  then(onFulfilled, onRejected) {
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : result => result
+    onRejected = typeof onRejected === 'function' ? onRejected : reason => { throw reason }
+    if (this.PromiseState === myPromise.status.PENDING) {
+      this.onFulfilledCallbacks.push(onFulfilled)
+      this.onRejectedCallbacks.push(onRejected)
+    } else if (this.PromiseState === myPromise.status.FULFILLED) {
+      setTimeout(() => {
+        onFulfilled(this.PromiseResult)
+      })
+    } else if (this.PromiseState === myPromise.status.REJECTED) {
+      setTimeout(() => {
+        onRejected(this.PromiseResult)
+      })
+    }
   }
 }
-
-console.log(1);
-let commitment = new Commitment((resolve, reject) => {
-  console.log(2);
-  console.log(commitment.status);
-  setTimeout(() => {
-    console.log(3);
-    console.log(commitment.status);
-    resolve("success");
-    console.log(commitment.status);
-    console.log(4);
-  });
-});
-
-commitment
-  .then((result) => {
-    console.log(result);
-  })
-  .then((result) => {
-    console.log(result);
-  });
-
-// console
-// 1
-// 2
-// undefined
-// 3
-// 待定
-// 待定
-// 4
-// success
