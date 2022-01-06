@@ -95,6 +95,34 @@ class myPromise {
 
     return newPromise;
   }
+
+  catch(onRejected) {
+    return this.then(undefined, onRejected);
+  }
+
+  finally(callback) {
+    return this.then(callback, callback);
+  }
+
+  static resolve(value) {
+    if (value instanceof myPromise) {
+      return value;
+    } else if (typeof value === "object" && "then" in value) {
+      return new Promise((resolve, reject) => {
+        value.then(resolve, reject);
+      });
+    }
+
+    return new Promise((resolve, _) => {
+      resolve(value);
+    });
+  }
+
+  static reject(reason) {
+    return new Promise((_, reject) => {
+      reject(reason);
+    });
+  }
 }
 
 /**
