@@ -1,12 +1,12 @@
 class myPromise {
-  static status = {
+  static _status = {
     PENDING: "pending",
     FULFILLED: "fulfilled",
     REJECTED: "rejected",
   };
 
   constructor(func) {
-    this.PromiseState = myPromise.status.PENDING;
+    this.PromiseState = myPromise._status.PENDING;
     this.PromiseResult = null;
     this.onFulfilledCallbacks = [];
     this.onRejectedCallbacks = [];
@@ -18,9 +18,9 @@ class myPromise {
   }
 
   resolve(result) {
-    if (this.PromiseState === myPromise.status.PENDING) {
+    if (this.PromiseState === myPromise._status.PENDING) {
       setTimeout(() => {
-        this.PromiseState = myPromise.status.FULFILLED;
+        this.PromiseState = myPromise._status.FULFILLED;
         this.PromiseResult = result;
         this.onFulfilledCallbacks.forEach((callback) => {
           callback(result);
@@ -30,9 +30,9 @@ class myPromise {
   }
 
   reject(reason) {
-    if (this.PromiseState === myPromise.status.PENDING) {
+    if (this.PromiseState === myPromise._status.PENDING) {
       setTimeout(() => {
-        this.PromiseState = myPromise.status.REJECTED;
+        this.PromiseState = myPromise._status.REJECTED;
         this.PromiseResult = reason;
         this.onRejectedCallbacks.forEach((callback) => {
           callback(reason);
@@ -51,7 +51,7 @@ class myPromise {
             throw reason;
           };
     const newPromise = new myPromise((resolve, reject) => {
-      if (this.PromiseState === myPromise.status.PENDING) {
+      if (this.PromiseState === myPromise._status.PENDING) {
         this.onFulfilledCallbacks.push(() => {
           setTimeout(() => {
             try {
@@ -72,7 +72,7 @@ class myPromise {
             }
           });
         });
-      } else if (this.PromiseState === myPromise.status.FULFILLED) {
+      } else if (this.PromiseState === myPromise._status.FULFILLED) {
         setTimeout(() => {
           try {
             let x = onFulfilled(this.PromiseResult);
@@ -81,7 +81,7 @@ class myPromise {
             reject(error);
           }
         });
-      } else if (this.PromiseState === myPromise.status.REJECTED) {
+      } else if (this.PromiseState === myPromise._status.REJECTED) {
         setTimeout(() => {
           try {
             let x = onRejected(this.PromiseResult);
@@ -99,10 +99,10 @@ class myPromise {
 
 /**
  * 对resolve()、reject() 进行改造增强 针对resolve()和reject()中不同值情况 进行处理
- * @param  {promise} newPromise promise1.then方法返回的新的promise对象
- * @param  {[type]} x         promise1中onFulfilled或onRejected的返回值
- * @param  {[type]} resolve   promise2的resolve方法
- * @param  {[type]} reject    promise2的reject方法
+ * @param  {promise} newPromise promise.then方法返回的新的promise对象
+ * @param  {[type]} x         promise中onFulfilled或onRejected的返回值
+ * @param  {[type]} resolve   newPromise的resolve方法
+ * @param  {[type]} reject    newPromise的reject方法
  */
 function resolvePromise(newPromise, x, resolve, reject) {
   if (x === newPromise) {
@@ -110,7 +110,7 @@ function resolvePromise(newPromise, x, resolve, reject) {
   }
   // 2.3.2 如果 x 为 Promise ，则使 newPromise 接受 x 的状态
   if (x instanceof myPromise) {
-    if (x.PromiseState === myPromise.PENDING) {
+    if (x.PromiseState === myPromise._status.PENDING) {
       /**
        * 2.3.2.1 如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
        *         注意"直至 x 被执行或拒绝"这句话，
@@ -119,10 +119,10 @@ function resolvePromise(newPromise, x, resolve, reject) {
       x.then((y) => {
         resolvePromise(newPromise, y, resolve, reject);
       }, reject);
-    } else if (x.PromiseState === myPromise.FULFILLED) {
+    } else if (x.PromiseState === myPromise._status.FULFILLED) {
       // 2.3.2.2 如果 x 处于执行态，用相同的值执行 promise
       resolve(x.PromiseResult);
-    } else if (x.PromiseState === myPromise.REJECTED) {
+    } else if (x.PromiseState === myPromise._status.REJECTED) {
       // 2.3.2.3 如果 x 处于拒绝态，用相同的据因拒绝 promise
       reject(x.PromiseResult);
     }
