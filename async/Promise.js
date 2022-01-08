@@ -22,7 +22,7 @@ class myPromise {
       setTimeout(() => {
         this.PromiseState = myPromise.status.FULFILLED
         this.PromiseResult = result
-        this.onFulfilledCallbacks.forEach(callback => {
+        this.onFulfilledCallbacks.forEach((callback) => {
           callback(result)
         })
       })
@@ -34,7 +34,7 @@ class myPromise {
       setTimeout(() => {
         this.PromiseState = myPromise.status.REJECTED
         this.PromiseResult = reason
-        this.onRejectedCallbacks.forEach(callback => {
+        this.onRejectedCallbacks.forEach((callback) => {
           callback(reason)
         })
       })
@@ -43,11 +43,11 @@ class myPromise {
 
   then(onFulfilled, onRejected) {
     onFulfilled =
-      typeof onFulfilled === 'function' ? onFulfilled : result => result
+      typeof onFulfilled === 'function' ? onFulfilled : (result) => result
     onRejected =
       typeof onRejected === 'function'
         ? onRejected
-        : reason => {
+        : (reason) => {
             throw reason
           }
     const newPromise = new myPromise((resolve, reject) => {
@@ -134,11 +134,11 @@ class myPromise {
 
         promises.forEach((item, index) => {
           myPromise.resolve(item).then(
-            value => {
+            (value) => {
               result[index] = value
               ++count === promises.length && resolve(result)
             },
-            reason => {
+            (reason) => {
               reject(reason)
             }
           )
@@ -159,14 +159,14 @@ class myPromise {
 
         promises.forEach((item, index) => {
           myPromise.resolve(item).then(
-            value => {
+            (value) => {
               result[index] = {
                 status: 'fulfilled',
                 value,
               }
               ++count === promises.length && resolve(result)
             },
-            reason => {
+            (reason) => {
               result[index] = {
                 status: 'rejected',
                 reason,
@@ -192,10 +192,10 @@ class myPromise {
 
         promises.forEach((item, index) => {
           myPromise.resolve(item).then(
-            value => {
+            (value) => {
               resolve(value)
             },
-            reason => {
+            (reason) => {
               errors[index] = reason
               ++count === promises.length && reject(new AggregateError(errors))
             }
@@ -211,7 +211,7 @@ class myPromise {
     return new myPromise((resolve, reject) => {
       if (Array.isArray(promises)) {
         if (promises.length > 0) {
-          promises.forEach(item => {
+          promises.forEach((item) => {
             myPromise.resolve(item).then(resolve, reject)
           })
         }
@@ -241,7 +241,7 @@ function resolvePromise(newPromise, x, resolve, reject) {
        *         注意"直至 x 被执行或拒绝"这句话，
        *         这句话的意思是：x 被执行x，如果执行的时候拿到一个y，还要继续解析y
        */
-      x.then(y => {
+      x.then((y) => {
         resolvePromise(newPromise, y, resolve, reject)
       }, reject)
     } else if (x.PromiseState === myPromise.FULFILLED) {
@@ -274,13 +274,13 @@ function resolvePromise(newPromise, x, resolve, reject) {
         then.call(
           x,
           // 2.3.3.3.1 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
-          y => {
+          (y) => {
             if (called) return
             called = true
             resolvePromise(newPromise, y, resolve, reject)
           },
           // 2.3.3.3.2 如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise
-          r => {
+          (r) => {
             if (called) return
             called = true
             reject(r)
