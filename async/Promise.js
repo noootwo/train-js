@@ -18,7 +18,7 @@ class myPromise {
   }
 
   resolve(result) {
-    if (this.PromiseState === myPromise.status.PENDING) {
+    if (this.PromiseState === myPromise._status.PENDING) {
       setTimeout(() => {
         this.PromiseState = myPromise.status.FULFILLED
         this.PromiseResult = result
@@ -30,7 +30,7 @@ class myPromise {
   }
 
   reject(reason) {
-    if (this.PromiseState === myPromise.status.PENDING) {
+    if (this.PromiseState === myPromise._status.PENDING) {
       setTimeout(() => {
         this.PromiseState = myPromise.status.REJECTED
         this.PromiseResult = reason
@@ -51,7 +51,7 @@ class myPromise {
             throw reason
           }
     const newPromise = new myPromise((resolve, reject) => {
-      if (this.PromiseState === myPromise.status.PENDING) {
+      if (this.PromiseState === myPromise._status.PENDING) {
         this.onFulfilledCallbacks.push(() => {
           setTimeout(() => {
             try {
@@ -224,10 +224,10 @@ class myPromise {
 
 /**
  * 对resolve()、reject() 进行改造增强 针对resolve()和reject()中不同值情况 进行处理
- * @param  {promise} newPromise promise1.then方法返回的新的promise对象
- * @param  {[type]} x         promise1中onFulfilled或onRejected的返回值
- * @param  {[type]} resolve   promise2的resolve方法
- * @param  {[type]} reject    promise2的reject方法
+ * @param  {promise} newPromise promise.then方法返回的新的promise对象
+ * @param  {[type]} x         promise中onFulfilled或onRejected的返回值
+ * @param  {[type]} resolve   newPromise的resolve方法
+ * @param  {[type]} reject    newPromise的reject方法
  */
 function resolvePromise(newPromise, x, resolve, reject) {
   if (x === newPromise) {
@@ -235,7 +235,7 @@ function resolvePromise(newPromise, x, resolve, reject) {
   }
   // 2.3.2 如果 x 为 Promise ，则使 newPromise 接受 x 的状态
   if (x instanceof myPromise) {
-    if (x.PromiseState === myPromise.PENDING) {
+    if (x.PromiseState === myPromise._status.PENDING) {
       /**
        * 2.3.2.1 如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
        *         注意"直至 x 被执行或拒绝"这句话，

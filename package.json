@@ -1,0 +1,25 @@
+{
+  "name": "train-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "promises-aplus-tests /async/Promise"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pineapple0919/train-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pineapple0919/train-js/issues"
+  },
+  "homepage": "https://github.com/Pineapple0919/train-js#readme",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
