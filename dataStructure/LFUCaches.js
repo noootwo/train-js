@@ -2,9 +2,10 @@
  * @param {number} capacity
  */
 var LFUCache = function (capacity) {
+  this.minTime = 1
   this.capacity = capacity
-  this.caches = new Map()
-  this.times = new Map()
+  this.cachesMap = new Map()
+  this.timesMap = new Map()
 }
 
 /**
@@ -12,25 +13,24 @@ var LFUCache = function (capacity) {
  * @return {number}
  */
 LFUCache.prototype.get = function (key) {
-  if (!this.capacity) return -1
-  if (this.caches.has(key)) {
-    const current = this.caches.get(key)
-    const index = this.times.get(current.count).indexOf({ ...current, key })
-    this.times.get(current.count).splice(index, 1)
-    console.log(this.times)
-    if (this.times.get(current.count).length === 0) {
-      this.times.delete(current.count)
-      this.minCount = current.count + 1
+  if (this.capacity === 0) return -1
+  if (this.cachesMap.has(key)) {
+    const currentNode = this.cachesMap.get(key)
+    const index = this.timesMap.get(currentNode.times).indexOf(currentNode)
+    this.timesMap.get(currentNode.times).splice(index, 1)
+    if (!this.timesMap.get(currentNode.times).length) {
+      this.timesMap.delete(currentNode.times)
+      if (currentNode.times === this.minTime) {
+        this.minTime++
+      }
     }
-    current.count++
-    if (this.times.has(current.count)) {
-      this.times.get(current.count).push({ ...current, key })
+    currentNode.times++
+    if (this.timesMap.has(currentNode.times)) {
+      this.timesMap.get(currentNode.times).push(currentNode)
     } else {
-      this.times.set(current.count, [{ ...current, key }])
+      this.timesMap.set(currentNode.times, [currentNode])
     }
-    console.log(this.times)
-    console.log('get', this.caches)
-    return current.value
+    return currentNode.value
   } else {
     return -1
   }
@@ -42,42 +42,47 @@ LFUCache.prototype.get = function (key) {
  * @return {void}
  */
 LFUCache.prototype.put = function (key, value) {
-  if (!this.capacity) return
-  if (this.caches.has(key)) {
-    const current = this.caches.get(key)
-    current.value = value
-    const index = this.times.get(current.count).indexOf({ ...current, key })
-    this.times.get(current.count).splice(index, 1)
-    if (this.times.get(current.count).length === 0) {
-      this.times.delete(current.count)
-      this.minCount = current.count + 1
+  if (this.capacity === 0) return
+  if (this.cachesMap.has(key)) {
+    const currentNode = this.cachesMap.get(key)
+    const index = this.timesMap.get(currentNode.times).indexOf(currentNode)
+    this.timesMap.get(currentNode.times).splice(index, 1)
+    if (!this.timesMap.get(currentNode.times).length) {
+      this.timesMap.delete(currentNode.times)
+      if (currentNode.times === this.minTime) {
+        this.minTime++
+      }
     }
-    current.count++
-    if (this.times.has(current.count)) {
-      this.times.get(current.count).push({ ...current, key })
+    currentNode.value = value
+    currentNode.times++
+    if (this.timesMap.has(currentNode.times)) {
+      this.timesMap.get(currentNode.times).push(currentNode)
     } else {
-      this.times.set(current.count, [{ ...current, key }])
+      this.timesMap.set(currentNode.times, [currentNode])
     }
   } else {
-    if (this.caches.size === this.capacity) {
-      console.log(this.minCount)
-      const del = this.times.get(this.minCount).shift()
-      if (this.times.get(this.minCount).length === 0) {
-        this.times.delete(this.minCount)
+    if (this.capacity === this.cachesMap.size) {
+      const deleteNode = this.timesMap.get(this.minTime).shift()
+      if (!this.timesMap.get(this.minTime).length) {
+        this.timesMap.delete(this.minTime)
       }
-      this.caches.delete(del.key)
+      this.cachesMap.delete(deleteNode.key)
     }
-    const n = { value, count: 1 }
-    this.caches.set(key, n)
-    if (this.times.has(1)) {
-      this.times.get(1).push({ ...n, key })
+    const newNode = new Node(key, value)
+    this.cachesMap.set(key, newNode)
+    if (this.timesMap.get(1)) {
+      this.timesMap.get(1).push(newNode)
     } else {
-      this.times.set(1, [{ ...n, key }])
+      this.timesMap.set(1, [newNode])
     }
-    console.log('puttimes', this.times)
-    this.minCount = 1
+    this.minTime = 1
   }
-  console.log('put', this.caches)
+}
+
+var Node = function (key, value) {
+  this.key = key
+  this.value = value
+  this.times = 1
 }
 
 /**
